@@ -12,3 +12,6 @@
 .dart_tool/
 build/
 pubspec.lock
+build/4f2a58af27abc49ecf55570043bbf938.cache.dill.track.dill
+build/flutter_assets/AssetManifest.json
+build/flutter_assets/FontManifest.json
