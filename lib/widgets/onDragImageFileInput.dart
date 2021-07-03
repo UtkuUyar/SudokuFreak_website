@@ -15,10 +15,10 @@ class OnDragImageFileInput extends StatefulWidget {
 
 class _OnDragImageFileInputState extends State<OnDragImageFileInput> {
   late DropzoneViewController controller;
+  bool _hovered = false;
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ImageCarrier>(context);
     return LayoutBuilder(
       builder: (ctx, constraints) => Container(
         margin: EdgeInsets.symmetric(
@@ -27,14 +27,18 @@ class _OnDragImageFileInputState extends State<OnDragImageFileInput> {
         ),
         child: Row(
           children: [
+            /* TODO: Take this image displayer out of this widget so that it
+               doesn't get rebuilt at every hover action.
+            */
             Flexible(
               child: Container(
+                height: constraints.maxHeight,
                 child: DottedBorder(
                   color: CustomColorThemes.primaryColorCustom,
                   dashPattern: [20, 20],
-                  child: provider.imageDataInitialized
+                  child: Provider.of<ImageCarrier>(context).imageDataInitialized
                       ? Image.memory(
-                          provider.imageData,
+                          Provider.of<ImageCarrier>(context).imageData,
                           fit: BoxFit.fill,
                         )
                       : Center(
@@ -63,30 +67,67 @@ class _OnDragImageFileInputState extends State<OnDragImageFileInput> {
                 children: [
                   DropzoneView(
                     onCreated: (controller) => this.controller = controller,
+                    onHover: () {
+                      if (!this._hovered) {
+                        setState(() {
+                          this._hovered = true;
+                        });
+                      }
+                    },
+                    onLeave: () {
+                      if (this._hovered) {
+                        setState(() {
+                          this._hovered = false;
+                        });
+                      }
+                    },
                     onDrop: _acceptFile,
                   ),
-                  Container(
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 250),
                     height: constraints.maxHeight,
                     constraints: BoxConstraints(
                       minWidth: constraints.maxWidth * 8 / 13,
                     ),
-                    color:
-                        CustomColorThemes.logoPinkColorCustom.withOpacity(0.3),
+                    padding: EdgeInsets.all(25),
+                    color: this._hovered
+                        ? CustomColorThemes.logoPinkColorCustom.withOpacity(0.9)
+                        : CustomColorThemes.logoPinkColorCustom
+                            .withOpacity(0.45),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.cloud_upload,
-                          size: 80,
-                          color: CustomColorThemes.secondaryColorCustom,
+                        Flexible(
+                          flex: 1,
+                          child: AnimatedContainer(
+                            alignment: this._hovered
+                                ? Alignment.topCenter
+                                : Alignment.bottomCenter,
+                            duration: Duration(milliseconds: 250),
+                            child: Icon(
+                              Icons.cloud_upload,
+                              size: 80,
+                              color: CustomColorThemes.secondaryColorCustom,
+                            ),
+                          ),
                         ),
-                        Text(
-                          "Drag your image to upload",
-                          style: TextStyle(
-                              fontFamily: "Raleway",
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                        Flexible(
+                          flex: 1,
+                          child: AnimatedContainer(
+                            padding: EdgeInsets.only(top: 15),
+                            alignment: this._hovered
+                                ? Alignment.bottomCenter
+                                : Alignment.topCenter,
+                            duration: Duration(milliseconds: 250),
+                            child: Text(
+                              "Drag your image to upload",
+                              style: TextStyle(
+                                  fontFamily: "Raleway",
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -125,5 +166,8 @@ class _OnDragImageFileInputState extends State<OnDragImageFileInput> {
         ),
       );
     }
+    setState(() {
+      this._hovered = false;
+    });
   }
 }
