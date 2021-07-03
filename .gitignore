@@ -8,5 +8,7 @@
 .DS_Store
 
 # General
+.packages
 .dart_tool/
 build/
+pubspec.lock
