@@ -28,6 +28,10 @@ class MyApp extends StatelessWidget {
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
+                headline5: TextStyle(
+                  fontFamily: "Yellowtail",
+                  fontSize: 30,
+                ),
               )
               .apply(
                 displayColor: CustomColorThemes.secondaryColorCustom,
@@ -35,6 +39,9 @@ class MyApp extends StatelessWidget {
               ),
         ),
         home: MainScreen(),
+        routes: {
+          AboutScreen.routeName: (ctx) => AboutScreen(),
+        },
       ),
     );
   }
