@@ -21,120 +21,74 @@ class _OnDragImageFileInputState extends State<OnDragImageFileInput> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (ctx, constraints) => Container(
-        margin: EdgeInsets.symmetric(
-          horizontal: constraints.maxWidth * 1 / 26,
-          vertical: constraints.maxHeight * 1 / 26,
-        ),
-        child: Row(
+        child: Stack(
           children: [
-            /* TODO: Take this image displayer out of this widget so that it
-               doesn't get rebuilt at every hover action.
-            */
-            Flexible(
-              child: Container(
-                height: constraints.maxHeight,
-                child: DottedBorder(
-                  color: CustomColorThemes.primaryColorCustom,
-                  dashPattern: [20, 20],
-                  child: Provider.of<ImageCarrier>(context).imageDataInitialized
-                      ? Image.memory(
-                          Provider.of<ImageCarrier>(context).imageData,
-                          fit: BoxFit.fill,
-                        )
-                      : Center(
-                          child: Text(
-                            "No image uploaded",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline6
-                                ?.copyWith(
-                                  color: CustomColorThemes.primaryColorCustom,
-                                ),
-                          ),
-                        ),
-                ),
-                padding: EdgeInsets.all(50),
-                constraints: BoxConstraints(
-                  minWidth: constraints.maxWidth * 5 / 13,
-                ),
-                color: CustomColorThemes.secondaryColorCustom.shade800,
-              ),
-              flex: 5,
+            DropzoneView(
+              onCreated: (controller) => this.controller = controller,
+              onHover: () {
+                if (!this._hovered) {
+                  setState(() {
+                    this._hovered = true;
+                  });
+                }
+              },
+              onLeave: () {
+                if (this._hovered) {
+                  setState(() {
+                    this._hovered = false;
+                  });
+                }
+              },
+              onDrop: _acceptFile,
             ),
-            Flexible(
-              flex: 8,
-              child: Stack(
+            AnimatedContainer(
+              duration: Duration(milliseconds: 250),
+              height: constraints.maxHeight,
+              constraints: BoxConstraints(
+                minWidth: constraints.maxWidth,
+              ),
+              padding: EdgeInsets.all(25),
+              color: this._hovered
+                  ? CustomColorThemes.logoPinkColorCustom.withOpacity(0.9)
+                  : CustomColorThemes.logoPinkColorCustom.withOpacity(0.45),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  DropzoneView(
-                    onCreated: (controller) => this.controller = controller,
-                    onHover: () {
-                      if (!this._hovered) {
-                        setState(() {
-                          this._hovered = true;
-                        });
-                      }
-                    },
-                    onLeave: () {
-                      if (this._hovered) {
-                        setState(() {
-                          this._hovered = false;
-                        });
-                      }
-                    },
-                    onDrop: _acceptFile,
+                  Flexible(
+                    flex: 1,
+                    child: AnimatedContainer(
+                      alignment: this._hovered
+                          ? Alignment.topCenter
+                          : Alignment.bottomCenter,
+                      duration: Duration(milliseconds: 250),
+                      child: Icon(
+                        Icons.cloud_upload,
+                        size: 80,
+                        color: CustomColorThemes.secondaryColorCustom,
+                      ),
+                    ),
                   ),
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 250),
-                    height: constraints.maxHeight,
-                    constraints: BoxConstraints(
-                      minWidth: constraints.maxWidth * 8 / 13,
+                  Flexible(
+                    flex: 1,
+                    child: AnimatedContainer(
+                      padding: EdgeInsets.only(top: 15),
+                      alignment: this._hovered
+                          ? Alignment.bottomCenter
+                          : Alignment.topCenter,
+                      duration: Duration(milliseconds: 250),
+                      child: Text(
+                        "Drag your image to upload",
+                        style: TextStyle(
+                            fontFamily: "Raleway",
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
-                    padding: EdgeInsets.all(25),
-                    color: this._hovered
-                        ? CustomColorThemes.logoPinkColorCustom.withOpacity(0.9)
-                        : CustomColorThemes.logoPinkColorCustom
-                            .withOpacity(0.45),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: AnimatedContainer(
-                            alignment: this._hovered
-                                ? Alignment.topCenter
-                                : Alignment.bottomCenter,
-                            duration: Duration(milliseconds: 250),
-                            child: Icon(
-                              Icons.cloud_upload,
-                              size: 80,
-                              color: CustomColorThemes.secondaryColorCustom,
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          child: AnimatedContainer(
-                            padding: EdgeInsets.only(top: 15),
-                            alignment: this._hovered
-                                ? Alignment.bottomCenter
-                                : Alignment.topCenter,
-                            duration: Duration(milliseconds: 250),
-                            child: Text(
-                              "Drag your image to upload",
-                              style: TextStyle(
-                                  fontFamily: "Raleway",
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
+                  ),
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),

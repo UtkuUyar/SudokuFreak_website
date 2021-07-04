@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../themes/customColorThemes.dart';
 import '../widgets/logo.dart';
+import '../widgets/imageDisplay.dart';
 import '../widgets/onDragImageFileInput.dart';
 
 class MainScreen extends StatelessWidget {
@@ -30,7 +31,12 @@ class MainScreen extends StatelessWidget {
                   Container(
                     height: 500,
                     width: 1300,
-                    child: OnDragImageFileInput(),
+                    child: Row(
+                      children: [
+                        Flexible(flex: 5, child: ImageDisplay()),
+                        Flexible(flex: 8, child: OnDragImageFileInput()),
+                      ],
+                    ),
                   ),
                 ],
               ),
