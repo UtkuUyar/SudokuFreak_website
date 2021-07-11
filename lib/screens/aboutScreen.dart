@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sudokufreak/themes/customColorThemes.dart';
 
-import '../widgets/FixedAppBar.dart';
-
 class AboutScreen extends StatelessWidget {
   static const routeName = "/about";
   AboutScreen({Key? key}) : super(key: key);

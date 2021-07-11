@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../screens/aboutScreen.dart';
-import '../themes/customColorThemes.dart';
 import '../widgets/logo.dart';
 import '../widgets/imageDisplay.dart';
 import '../widgets/onDragImageFileInput.dart';
