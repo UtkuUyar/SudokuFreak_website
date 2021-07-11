@@ -7,7 +7,11 @@ import '../providers/imageProvider.dart';
 import '../themes/customColorThemes.dart';
 
 class OnDragImageFileInput extends StatefulWidget {
-  const OnDragImageFileInput({Key? key}) : super(key: key);
+  final void Function()? processCallback;
+  const OnDragImageFileInput({
+    Key? key,
+    required this.processCallback,
+  }) : super(key: key);
 
   @override
   _OnDragImageFileInputState createState() => _OnDragImageFileInputState();
@@ -16,12 +20,14 @@ class OnDragImageFileInput extends StatefulWidget {
 class _OnDragImageFileInputState extends State<OnDragImageFileInput> {
   late DropzoneViewController controller;
   bool _hovered = false;
+  bool _loaded = false;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (ctx, constraints) => Container(
+    return LayoutBuilder(builder: (ctx, constraints) {
+      return Container(
         child: Stack(
+          clipBehavior: Clip.none,
           children: [
             DropzoneView(
               onCreated: (controller) => this.controller = controller,
@@ -88,11 +94,23 @@ class _OnDragImageFileInputState extends State<OnDragImageFileInput> {
                   ),
                 ],
               ),
-            )
+            ),
+            Positioned(
+              child: ElevatedButton(
+                child: Text(
+                  "Process",
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                onPressed: this._loaded ? widget.processCallback : null,
+              ),
+              bottom: -10,
+              left: constraints.maxWidth / 2.5,
+              right: constraints.maxWidth / 2.5,
+            ),
           ],
         ),
-      ),
-    );
+      );
+    });
   }
 
   Future<void> _acceptFile(dynamic event) async {
@@ -102,6 +120,9 @@ class _OnDragImageFileInputState extends State<OnDragImageFileInput> {
     if (mime.split('/')[0] == "image" && bytes / (1024 * 1024) <= 3) {
       final data = await this.controller.getFileData(event);
       Provider.of<ImageCarrier>(context, listen: false).loadImage(data);
+      setState(() {
+        this._loaded = true;
+      });
     } else {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
