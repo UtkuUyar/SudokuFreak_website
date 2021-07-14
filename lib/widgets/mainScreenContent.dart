@@ -28,66 +28,74 @@ class _MainScreenContentState extends State<MainScreenContent> {
       return Stack(
         alignment: Alignment.center,
         children: [
-          Container(
+          AnimatedContainer(
+            duration: Duration(milliseconds: 500),
             foregroundDecoration: BoxDecoration(
               color: this._createPopup
                   ? Colors.black.withAlpha(192)
                   : Colors.transparent,
             ),
             child: CustomScrollView(
+              physics:
+                  this._createPopup ? NeverScrollableScrollPhysics() : null,
               slivers: <Widget>[
                 FixedAppBar(
                   pages: {AboutScreen.routeName: "About"},
                 ),
                 SliverList(
-                  delegate: SliverChildListDelegate(<Widget>[
-                    Center(
-                      child: Container(
-                        margin: EdgeInsets.all(50),
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 500,
-                              width: 500,
-                              child: Logo(),
-                            ),
-                            SizedBox(
-                              height: 50,
-                            ),
-                            Container(
-                              height: 500,
-                              width: 1300,
-                              child: Row(
-                                children: [
-                                  Flexible(flex: 5, child: ImageDisplay()),
-                                  Flexible(
-                                    flex: 8,
-                                    child: OnDragImageFileInput(
-                                      processCallback: triggerPopup,
-                                    ),
-                                  ),
-                                ],
+                  delegate: SliverChildListDelegate(
+                    <Widget>[
+                      Center(
+                        child: Container(
+                          margin: EdgeInsets.all(50),
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 500,
+                                width: 500,
+                                child: Logo(),
                               ),
-                            ),
-                          ],
+                              SizedBox(
+                                height: 50,
+                              ),
+                              Container(
+                                height: 500,
+                                width: 1300,
+                                child: Row(
+                                  children: [
+                                    Flexible(flex: 5, child: ImageDisplay()),
+                                    Flexible(
+                                      flex: 8,
+                                      child: OnDragImageFileInput(
+                                        processCallback: triggerPopup,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ]),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
           if (this._createPopup)
-            Container(
-              height: constraints.maxHeight * 0.9,
-              width: constraints.maxWidth * 0.8,
-              constraints: BoxConstraints(
-                minHeight: 500,
-                minWidth: 500,
-              ),
-              child: Card(),
+            GestureDetector(
+              onTap: () => setState(() {
+                this._createPopup = false;
+              }),
             ),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeInOutCirc,
+            width: this._createPopup ? constraints.maxWidth * 0.8 : 0,
+            height: this._createPopup ? constraints.maxHeight * 0.9 : 0,
+            child: Card(),
+          ),
         ],
       );
     });
